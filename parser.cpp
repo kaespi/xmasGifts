@@ -15,6 +15,7 @@
 //
 
 #include "parser.h"
+#include "output.h"
 
 #include <string>
 #include <iostream>
@@ -62,12 +63,12 @@ vector<Person> parseFile(const string &fIn)
             }
             else
             {
-                cout << name << " appears multiple times (using just the first entry)" << endl;
+                cerr << name << " appears multiple times (using just the first entry)" << endl;
             }
         }
     }
 
-    cout << people.size() << " people parsed" << endl;
+    dbg << people.size() << " people parsed" << endl;
 
     debugPrintCfg(people);
 
@@ -107,13 +108,15 @@ static void debugPrintCfg(const vector<Person> &people)
 {
     for (const auto &p : people)
     {
-        cout << p.first << ":";
+        dbg << p.first << ":";
 
         for (const auto &b : p.second)
         {
-            cout << " " << b;
+            dbg << " " << b;
         }
 
-        cout << endl;
+        dbg << endl;
     }
+
+    dbg << endl;
 }

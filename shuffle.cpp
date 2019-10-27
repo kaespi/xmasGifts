@@ -15,6 +15,7 @@
 //
 
 #include "shuffle.h"
+#include "output.h"
 
 #include <iostream>
 #include <random>
@@ -45,6 +46,8 @@ std::vector<Person> shuffle1(std::vector<Person> &giftList)
 
         debugList(giftList);
     }
+
+    dbg << endl;
 
     return giftList;
 }
@@ -79,7 +82,7 @@ static void debugList(const vector<Person> &list)
 {
     for (const auto &p : list)
     {
-        cout << p.first << " -> ";
+        dbg << p.first << " -> ";
     }
-    cout << list.cbegin()->first << endl;
+    dbg << list.cbegin()->first << endl;
 }

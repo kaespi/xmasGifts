@@ -15,7 +15,7 @@
 #
 
 CXXFLAGS = -O2 -g -Wall -std=c++11
-OBJS = xmasGifts.o parser.o shuffle.o
+OBJS = xmasGifts.o parser.o shuffle.o output.o
 TARGET = xmasGifts
 
 $(TARGET): $(OBJS)

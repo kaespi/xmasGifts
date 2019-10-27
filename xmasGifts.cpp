@@ -20,11 +20,18 @@
 #include "parser.h"
 #include "person.h"
 #include "shuffle.h"
+#include "output.h"
 
 using namespace std;
 
 // prints a little help text to the command line
 static void printHelp();
+
+// parse the command line and return the file to be parsed
+static string parseCmdLine(int argc, char **argv);
+
+// prints the final resulting list of donors/giftees
+static void printFoundList(const vector<Person> &giftList);
 
 int main(int argc, char **argv)
 {
@@ -34,16 +41,12 @@ int main(int argc, char **argv)
     }
     else
     {
-        const string filename = argv[1];
+        const string filename = parseCmdLine(argc, argv);
+
         auto p = parseFile(filename);
 
         vector<Person> g = shuffle1(p);
-
-        for (const auto &pList : g)
-        {
-            cout << pList.first << " -> ";
-        }
-        cout << g.cbegin()->first << endl;
+        printFoundList(g);
     }
 
 	return EXIT_SUCCESS;
@@ -51,7 +54,8 @@ int main(int argc, char **argv)
 
 static void printHelp()
 {
-    cout << "Usage: xmasGifts [<configuration file>]" << endl << endl <<
+    cout << "Usage: xmasGifts [-v] [<configuration file>]" << endl << endl <<
+            "    -v increases verbosity level" << endl <<
             "    configuration file: file containing the participants and their" << endl <<
             "                        past giftees/blocked giftees" << endl << endl <<
             "The configuration file should list on each line first the participant's name" << endl <<
@@ -63,4 +67,32 @@ static void printHelp()
             "The software then tries to find a circular list including all participants" << endl <<
             "having assigned another participant as giftee, such as for the above e.g." << endl << endl <<
             " Tom -> Bob -> Alice -> Peter -> Tom" << endl << endl;
+}
+
+static string parseCmdLine(int argc, char **argv)
+{
+    string filename;
+
+    for (int n=1; n<argc; ++n)
+    {
+        if (string("-v")==argv[n])
+        {
+            OutputCfg::increaseVerbosity();
+        }
+        else
+        {
+            filename = argv[n];
+        }
+    }
+
+    return filename;
+}
+
+static void printFoundList(const vector<Person> &giftList)
+{
+    for (const auto &pList : giftList)
+    {
+        out << pList.first << " -> ";
+    }
+    out << giftList.cbegin()->first << endl;
 }
