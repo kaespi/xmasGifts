@@ -19,6 +19,7 @@
 
 #include <iostream>
 #include <random>
+#include <algorithm>
 
 using namespace std;
 
@@ -85,4 +86,33 @@ static void debugList(const vector<Person> &list)
         dbg << p.first << " -> ";
     }
     dbg << list.cbegin()->first << endl;
+}
+
+map<unsigned int, string> randomizePersonNumbers(vector<Person> &people)
+{
+    map<unsigned int, string> persNum;
+
+    // code below copied from https://en.cppreference.com/w/cpp/numeric/random/uniform_int_distribution
+    random_device rd;  // Will be used to obtain a seed for the random number engine
+    mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
+    uniform_int_distribution<unsigned int> idist(0, people.size()-1);
+
+    vector<bool> ids(people.size(), false);
+
+    for (const auto &p : people)
+    {
+        // find a not yet used id for this person
+        unsigned int id = idist(gen);
+        while (ids[id])
+        {
+            if (++id == ids.size())
+            {
+                id = 0;
+            }
+        }
+        ids[id] = true;
+        persNum.emplace(make_pair(id, p.first));
+    }
+
+    return persNum;
 }

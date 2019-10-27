@@ -17,7 +17,12 @@
 #pragma once
 
 #include <vector>
+#include <map>
 
 #include "person.h"
 
+// shuffle the list of people and find a valid circular sequence of donor->giftee
 std::vector<Person> shuffle1(std::vector<Person> &people);
+
+// rotates the beginning of the vector randomly
+std::map<unsigned int, std::string> randomizePersonNumbers(std::vector<Person> &people);

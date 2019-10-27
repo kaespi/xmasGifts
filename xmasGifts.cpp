@@ -16,6 +16,8 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <fstream>
+#include <algorithm>
 
 #include "parser.h"
 #include "person.h"
@@ -33,6 +35,19 @@ static string parseCmdLine(int argc, char **argv);
 // prints the final resulting list of donors/giftees
 static void printFoundList(const vector<Person> &giftList);
 
+// writes the found gift list into the two output files
+static void genFiles(vector<Person> &giftList, const string &inFilename);
+
+// generates the output filenames for the envelopes and cards
+static pair<string, string> getOutFilenames(const string &inFilename);
+
+// writes the file with the cards
+static void writeCards(const map<unsigned int, string> &personIds, const string &filename);
+
+// writes the file with the cards
+static void writeEnvelopes(const map<unsigned int, string> &personIds,
+                           const vector<Person> &giftList, const string &filename);
+
 int main(int argc, char **argv)
 {
     if (argc < 2)
@@ -47,6 +62,7 @@ int main(int argc, char **argv)
 
         vector<Person> g = shuffle1(p);
         printFoundList(g);
+        genFiles(g, filename);
     }
 
 	return EXIT_SUCCESS;
@@ -92,7 +108,98 @@ static void printFoundList(const vector<Person> &giftList)
 {
     for (const auto &pList : giftList)
     {
-        out << pList.first << " -> ";
+        dbg << pList.first << " -> ";
     }
-    out << giftList.cbegin()->first << endl;
+    dbg << giftList.cbegin()->first << endl;
+}
+
+static void genFiles(vector<Person> &giftList, const string &inFilename)
+{
+    // now we'll have to produce envelopes and cards. We write two files
+    // where we have a mapping number <-> person. Two people might read
+    // the two files such that no one knows the actual found donor/giftee
+    // assignments
+    auto nums = randomizePersonNumbers(giftList);
+
+    auto fn = getOutFilenames(inFilename);
+
+    writeCards(nums, fn.first);
+    writeEnvelopes(nums, giftList, fn.second);
+
+    cout << "Info for cards written into " << fn.first << endl;
+    cout << "Info for envelopes written into " << fn.second << endl;
+}
+
+static pair<string, string> getOutFilenames(const string &inFilename)
+{
+    bool dotFound = false;
+    auto itIn=inFilename.rbegin();
+    for (; itIn!=inFilename.rend(); ++itIn)
+    {
+        if (*itIn=='.')
+        {
+            dotFound = true;
+            break;
+        }
+    }
+
+    string outFilenameBase;
+    if (dotFound)
+    {
+        outFilenameBase = string(inFilename, 0, inFilename.rend() - itIn - 1);
+    }
+    else
+    {
+        outFilenameBase = inFilename;
+    }
+
+    return make_pair(outFilenameBase+"_cards.txt", outFilenameBase+"_envelopes.txt");
+}
+
+static void writeCards(const map<unsigned int, string> &personIds, const string &filename)
+{
+    ofstream outputFile(filename);
+
+    for (auto &pn : personIds)
+    {
+        outputFile << pn.first << " - " << pn.second << endl;
+    }
+}
+
+static void writeEnvelopes(const map<unsigned int, string> &personIds,
+                           const vector<Person> &giftList, const string &filename)
+{
+    ofstream outputFile(filename);
+
+    // giftee iterator points one ahead
+    auto itGiftee = ++(giftList.begin());
+
+    for (auto itDonor=giftList.begin(); itDonor!=giftList.end(); ++itDonor)
+    {
+        // wrap around the giftee (which always points one ahead)
+        if (itGiftee==giftList.end())
+        {
+            itGiftee = giftList.begin();
+        }
+
+        const string &donor = itDonor->first;
+        const string &giftee = itGiftee->first;
+
+        // extract the ID's for the two people (donor and giftee)
+        auto donorId = find_if(personIds.begin(), personIds.end(),
+                [&donor](pair<unsigned int, string> const &v) { return v.second==donor; });
+        auto gifteeId = find_if(personIds.begin(), personIds.end(),
+                [&giftee](pair<unsigned int, string> const &v) { return v.second==giftee; });
+
+        if (donorId==personIds.end() || gifteeId==personIds.end())
+        {
+            cerr << "Could not find numbers for " << donor << " and " << giftee << endl;
+        }
+        else
+        {
+            outputFile << "Card " << gifteeId->first << " into envelope " << donorId->first << endl;
+        }
+
+        ++itGiftee;
+    }
 }
