@@ -23,18 +23,44 @@
 
 using namespace std;
 
+// prints a little help text to the command line
+static void printHelp();
+
 int main(int argc, char **argv)
 {
-    const string filename = (argc >= 2 ? argv[1] : "cfg.txt");
-    auto p = parseFile(filename);
-
-    vector<Person> g = shuffle1(p);
-
-    for (const auto &pList : g)
+    if (argc < 2)
     {
-        cout << pList.first << " -> ";
+        printHelp();
     }
-    cout << g.cbegin()->first << endl;
+    else
+    {
+        const string filename = argv[1];
+        auto p = parseFile(filename);
+
+        vector<Person> g = shuffle1(p);
+
+        for (const auto &pList : g)
+        {
+            cout << pList.first << " -> ";
+        }
+        cout << g.cbegin()->first << endl;
+    }
 
 	return EXIT_SUCCESS;
+}
+
+static void printHelp()
+{
+    cout << "Usage: xmasGifts [<configuration file>]" << endl << endl <<
+            "    configuration file: file containing the participants and their" << endl <<
+            "                        past giftees/blocked giftees" << endl << endl <<
+            "The configuration file should list on each line first the participant's name" << endl <<
+            "followed by a list of names which he shouldn't get assigned. E.g." << endl <<
+            " Alice Bob" << endl <<
+            " Bob   Peter,Tom" << endl <<
+            " Tom   Alice" << endl <<
+            " Peter Bob" << endl << endl <<
+            "The software then tries to find a circular list including all participants" << endl <<
+            "having assigned another participant as giftee, such as for the above e.g." << endl << endl <<
+            " Tom -> Bob -> Alice -> Peter -> Tom" << endl << endl;
 }
