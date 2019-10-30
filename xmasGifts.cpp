@@ -30,7 +30,7 @@ using namespace std;
 static void printHelp();
 
 // parse the command line and return the file to be parsed
-static string parseCmdLine(int argc, char **argv);
+static std::tuple<string, bool> parseCmdLine(int argc, char **argv);
 
 // prints the final resulting list of donors/giftees
 static void printFoundList(const vector<Person> &giftList);
@@ -56,14 +56,15 @@ int main(int argc, char **argv)
     }
     else
     {
-        const string filename = parseCmdLine(argc, argv);
+        const std::tuple<string, bool> cfg = parseCmdLine(argc, argv);
 
-        auto p = parseFile(filename);
+        auto p = parseFile(get<0>(cfg));
 
-        if (findValidListRecursive(p))
+        bool listConstructionSuccess = ( get<1>(cfg) ? findValidListRand(p) : findValidListRecursive(p) );
+        if (listConstructionSuccess)
         {
             printFoundList(p);
-            genFiles(p, filename);
+            genFiles(p, get<0>(cfg));
         }
     }
 
@@ -72,10 +73,11 @@ int main(int argc, char **argv)
 
 static void printHelp()
 {
-    cout << "Usage: xmasGifts [-v] [<configuration file>]" << endl << endl <<
+    cout << "Usage: xmasGifts [-v] [-r] [<configuration file>]" << endl << endl <<
             "    -v increases verbosity level" << endl <<
-            "    configuration file: file containing the participants and their" << endl <<
-            "                        past giftees/blocked giftees" << endl << endl <<
+            "    -r use purely random search for gift list (by default: systematic, recursive search)" << endl <<
+            "    <configuration file>: file containing the participants and their" << endl <<
+            "                          past giftees/blocked giftees" << endl << endl <<
             "The configuration file should list on each line first the participant's name" << endl <<
             "followed by a list of names which he shouldn't get assigned. E.g." << endl <<
             " Alice Bob" << endl <<
@@ -87,9 +89,10 @@ static void printHelp()
             " Tom -> Bob -> Alice -> Peter -> Tom" << endl << endl;
 }
 
-static string parseCmdLine(int argc, char **argv)
+static std::tuple<string, bool> parseCmdLine(int argc, char **argv)
 {
     string filename;
+    bool randomAlgo = false;
 
     for (int n=1; n<argc; ++n)
     {
@@ -97,13 +100,17 @@ static string parseCmdLine(int argc, char **argv)
         {
             OutputCfg::increaseVerbosity();
         }
+        else if (string("-r")==argv[n])
+        {
+            randomAlgo = true;
+        }
         else
         {
             filename = argv[n];
         }
     }
 
-    return filename;
+    return make_tuple(filename, randomAlgo);
 }
 
 static void printFoundList(const vector<Person> &giftList)

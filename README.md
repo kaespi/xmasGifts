@@ -18,10 +18,16 @@ Compile the software with `make all`.
 Run the tool in the command line with
 
 ```
-xmasGifts [-v] <config file>
+xmasGifts [-v] [-r] <config file>
 ```
 
-with `<config file>` being a configuration. Additionally a `-v` increases verbosity level. The format of the configuration file is explained in more details in the next section
+with `<config file>` being a configuration. Additionally a `-v` increases verbosity level. The format of the configuration file is explained in more details in the next section.
+
+The tool has two ways implemented to construct the "gift list":
+* by default it's using a recursive (and systematic) approach which is guaranteed to either find the solution or conclude that it's not possible to construct a valid list with the given constraints
+* if `-r` is used as command line parameter, it's using a purely random approach. It just randomly shuffles the participants. If the obtained list is valid it ends, otherwise it repeats that until a valid solution is obtained
+
+The second approach, i.e. using `-r` is a reasonable choice if there exist not too many constraints, i.e. when it's likely to find a valid list with just a few random guesses. In all other cases the default option is preferable.
 
 ### Configuration File
 
