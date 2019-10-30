@@ -60,9 +60,11 @@ int main(int argc, char **argv)
 
         auto p = parseFile(filename);
 
-        vector<Person> g = shuffle1(p);
-        printFoundList(g);
-        genFiles(g, filename);
+        if (findValidListRecsurive(p))
+        {
+            printFoundList(p);
+            genFiles(p, filename);
+        }
     }
 
 	return EXIT_SUCCESS;

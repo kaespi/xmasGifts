@@ -21,8 +21,11 @@
 
 #include "person.h"
 
-// shuffle the list of people and find a valid circular sequence of donor->giftee
-std::vector<Person> shuffle1(std::vector<Person> &people);
+// find a valid donor->giftee list by randomly shuffling it (stupid but random solution)
+bool findValidListRand(std::vector<Person> &giftList);
+
+// find a valid donor->giftee list by constructing it recursively
+bool findValidListRecsurive(std::vector<Person> &giftList);
 
 // rotates the beginning of the vector randomly
 std::map<unsigned int, std::string> randomizePersonNumbers(std::vector<Person> &people);
