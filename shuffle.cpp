@@ -72,7 +72,7 @@ bool findValidListRand(std::vector<Person> &giftList)
     return true;
 }
 
-bool findValidListRecsurive(std::vector<Person> &giftList)
+bool findValidListRecursive(std::vector<Person> &giftList)
 {
     // This implementation is more smart than shuffle1(). In here we're trying
     // to recursively construct a valid list. So in the end we're scanning

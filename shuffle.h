@@ -25,7 +25,7 @@
 bool findValidListRand(std::vector<Person> &giftList);
 
 // find a valid donor->giftee list by constructing it recursively
-bool findValidListRecsurive(std::vector<Person> &giftList);
+bool findValidListRecursive(std::vector<Person> &giftList);
 
 // rotates the beginning of the vector randomly
 std::map<unsigned int, std::string> randomizePersonNumbers(std::vector<Person> &people);

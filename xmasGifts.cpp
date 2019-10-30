@@ -60,7 +60,7 @@ int main(int argc, char **argv)
 
         auto p = parseFile(filename);
 
-        if (findValidListRecsurive(p))
+        if (findValidListRecursive(p))
         {
             printFoundList(p);
             genFiles(p, filename);
