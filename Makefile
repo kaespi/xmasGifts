@@ -14,7 +14,7 @@
 # along with xmasGifts.  If not, see <http:#www.gnu.org/licenses/>.
 #
 
-CXXFLAGS = -O2 -g -Wall -std=c++11
+CXXFLAGS = -O2 -Wall -std=c++11
 OBJS = xmasGifts.o parser.o shuffle.o output.o
 TARGET = xmasGifts
 
