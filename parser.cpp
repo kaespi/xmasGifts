@@ -31,12 +31,9 @@ static void parseBlockedGiftees(Person &p, istringstream &is);
 // debug prints the parsed configuration
 static void debugPrintCfg(const vector<Person> &people);
 
-namespace std
+bool operator==(const Person &x, const Person &y)
 {
-    bool operator==(const Person &x, const Person &y)
-    {
-        return x.first==y.first;
-    }
+    return x.name==y.name;
 }
 
 vector<Person> parseFile(const string &fIn)
@@ -87,7 +84,7 @@ static void parseBlockedGiftees(Person &p, istringstream &is)
             {
                 if (tmp.size() > 0)
                 {
-                    p.second.insert(tmp);
+                    p.blockedNames.insert(tmp);
                     tmp = "";
                 }
             }
@@ -99,7 +96,7 @@ static void parseBlockedGiftees(Person &p, istringstream &is)
 
         if (tmp.size() > 0)
         {
-            p.second.insert(tmp);
+            p.blockedNames.insert(tmp);
         }
     }
 }
@@ -108,9 +105,9 @@ static void debugPrintCfg(const vector<Person> &people)
 {
     for (const auto &p : people)
     {
-        dbg << p.first << ":";
+        dbg << p.name << ":";
 
-        for (const auto &b : p.second)
+        for (const auto &b : p.blockedNames)
         {
             dbg << " " << b;
         }

@@ -121,7 +121,7 @@ static bool checkList(const vector<Person> &giftList)
                 itGiftee = giftList.cbegin();
             }
 
-            listOk &= (itDonor->second.find(itGiftee->first) == itDonor->second.end());
+            listOk &= (itDonor->blockedNames.find(itGiftee->name) == itDonor->blockedNames.end());
 
             ++itGiftee;
         }
@@ -142,7 +142,7 @@ static bool addGiftees(vector<Person> &giftList, std::vector<Person>::iterator i
         // the first person in the list has to be a valid giftee for the last person
         // in the list
         itGiftee = giftList.begin();
-        if (itDonor->second.find(itGiftee->first) == itDonor->second.end())
+        if (itDonor->blockedNames.find(itGiftee->name) == itDonor->blockedNames.end())
         {
             // last element is valid, we've got a valid sequence!
             success = true;
@@ -156,7 +156,7 @@ static bool addGiftees(vector<Person> &giftList, std::vector<Person>::iterator i
         // the swapping if it wasn't successful
         for (auto itNewGiftee=itGiftee; itNewGiftee!=giftList.end(); ++itNewGiftee)
         {
-            if (itDonor->second.find(itNewGiftee->first) == itDonor->second.end())
+            if (itDonor->blockedNames.find(itNewGiftee->name) == itDonor->blockedNames.end())
             {
                 // itGiftee might point to the same element as itNewGiftee does.
                 // We don't need to worry about that, the library swap()-function
@@ -185,9 +185,9 @@ static void debugList(const vector<Person> &list)
 {
     for (const auto &p : list)
     {
-        dbg << p.first << " -> ";
+        dbg << p.name << " -> ";
     }
-    dbg << list.cbegin()->first << endl;
+    dbg << list.cbegin()->name << endl;
 }
 
 map<unsigned int, string> randomizePersonNumbers(vector<Person> &people)
@@ -213,7 +213,7 @@ map<unsigned int, string> randomizePersonNumbers(vector<Person> &people)
             }
         }
         ids[id] = true;
-        persNum.emplace(make_pair(id, p.first));
+        persNum.emplace(make_pair(id, p.name));
     }
 
     return persNum;

@@ -18,4 +18,8 @@
 
 #include <unordered_set>
 
-using Person = std::pair<std::string, std::unordered_set<std::string>>;
+struct Person
+{
+    std::string name;
+    std::unordered_set<std::string> blockedNames;
+};

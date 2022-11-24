@@ -117,9 +117,9 @@ static void printFoundList(const vector<Person> &giftList)
 {
     for (const auto &pList : giftList)
     {
-        dbg << pList.first << " -> ";
+        dbg << pList.name << " -> ";
     }
-    dbg << giftList.cbegin()->first << endl;
+    dbg << giftList.cbegin()->name << endl;
 }
 
 static void genFiles(vector<Person> &giftList, const string &inFilename)
@@ -191,8 +191,8 @@ static void writeEnvelopes(const map<unsigned int, string> &personIds,
             itGiftee = giftList.begin();
         }
 
-        const string &donor = itDonor->first;
-        const string &giftee = itGiftee->first;
+        const string &donor = itDonor->name;
+        const string &giftee = itGiftee->name;
 
         // extract the ID's for the two people (donor and giftee)
         auto donorId = find_if(personIds.begin(), personIds.end(),
