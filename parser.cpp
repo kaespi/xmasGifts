@@ -23,11 +23,60 @@
 #include <sstream>
 #include <algorithm>
 
+namespace
+{
 // parse a list of (delimited) names
-static void parseBlockedGiftees(Person &p, std::istringstream &is);
+void parseBlockedGiftees(Person &p, std::istringstream &is);
 
 // debug prints the parsed configuration
-static void debugPrintCfg(const std::vector<Person> &people);
+void debugPrintCfg(const std::vector<Person> &people);
+
+void parseBlockedGiftees(Person &p, std::istringstream &is)
+{
+    std::string s;
+    while (is >> s)
+    {
+        std::string tmp;
+        for (auto c = s.cbegin(); c!=s.cend(); c++)
+        {
+            if (*c==',' || *c==';')
+            {
+                if (tmp.size() > 0)
+                {
+                    p.blockedNames.insert(tmp);
+                    tmp = "";
+                }
+            }
+            else
+            {
+                tmp += *c;
+            }
+        }
+
+        if (tmp.size() > 0)
+        {
+            p.blockedNames.insert(tmp);
+        }
+    }
+}
+
+void debugPrintCfg(const std::vector<Person> &people)
+{
+    for (const auto &p : people)
+    {
+        dbg << p.name << ":";
+
+        for (const auto &b : p.blockedNames)
+        {
+            dbg << " " << b;
+        }
+
+        dbg << std::endl;
+    }
+
+    dbg << std::endl;
+}
+} // namespace
 
 bool operator==(const Person &x, const Person &y)
 {
@@ -75,50 +124,4 @@ std::vector<Person> parseFile(const std::string &fIn, const bool sendEmails)
     debugPrintCfg(people);
 
     return people;
-}
-
-static void parseBlockedGiftees(Person &p, std::istringstream &is)
-{
-    std::string s;
-    while (is >> s)
-    {
-        std::string tmp;
-        for (auto c = s.cbegin(); c!=s.cend(); c++)
-        {
-            if (*c==',' || *c==';')
-            {
-                if (tmp.size() > 0)
-                {
-                    p.blockedNames.insert(tmp);
-                    tmp = "";
-                }
-            }
-            else
-            {
-                tmp += *c;
-            }
-        }
-
-        if (tmp.size() > 0)
-        {
-            p.blockedNames.insert(tmp);
-        }
-    }
-}
-
-static void debugPrintCfg(const std::vector<Person> &people)
-{
-    for (const auto &p : people)
-    {
-        dbg << p.name << ":";
-
-        for (const auto &b : p.blockedNames)
-        {
-            dbg << " " << b;
-        }
-
-        dbg << std::endl;
-    }
-
-    dbg << std::endl;
 }

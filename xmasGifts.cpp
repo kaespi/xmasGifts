@@ -24,6 +24,8 @@
 #include "shuffle.h"
 #include "output.h"
 
+namespace
+{
 struct Config {
     std::string filename{};
     bool randomAlgo{false};
@@ -31,51 +33,29 @@ struct Config {
 };
 
 // prints a little help text to the command line
-static void printHelp();
+void printHelp();
 
 // parse the command line and return the file to be parsed
-static Config parseCmdLine(int argc, char **argv);
+Config parseCmdLine(int argc, char **argv);
 
 // prints the final resulting list of donors/giftees
-static void printFoundList(const std::vector<Person> &giftList);
+void printFoundList(const std::vector<Person> &giftList);
 
 // writes the found gift list into the two output files
-static void genFiles(std::vector<Person> &giftList, const std::string &inFilename);
+void genFiles(std::vector<Person> &giftList, const std::string &inFilename);
 
 // generates the output filenames for the envelopes and cards
-static std::pair<std::string, std::string> getOutFilenames(const std::string &inFilename);
+std::pair<std::string, std::string> getOutFilenames(const std::string &inFilename);
 
 // writes the file with the cards
-static void writeCards(const std::map<unsigned int, std::string> &personIds, const std::string &filename);
+void writeCards(const std::map<unsigned int, std::string> &personIds, const std::string &filename);
 
 // writes the file with the cards
-static void writeEnvelopes(const std::map<unsigned int, std::string> &personIds,
+void writeEnvelopes(const std::map<unsigned int, std::string> &personIds,
                            const std::vector<Person> &giftList, const std::string &filename);
 
-int main(int argc, char **argv)
-{
-    if (argc < 2)
-    {
-        printHelp();
-    }
-    else
-    {
-        auto const cfg = parseCmdLine(argc, argv);
 
-        auto p = parseFile(cfg.filename, cfg.sendEmails);
-
-        bool listConstructionSuccess = ( cfg.randomAlgo ? findValidListRand(p) : findValidListRecursive(p) );
-        if (listConstructionSuccess)
-        {
-            printFoundList(p);
-            genFiles(p, cfg.filename);
-        }
-    }
-
-	return EXIT_SUCCESS;
-}
-
-static void printHelp()
+void printHelp()
 {
     std::cout << "Usage: xmasGifts [-v] [-r] [-e] [<configuration file>]" << std::endl << std::endl <<
                  "    -v increases verbosity level" << std::endl <<
@@ -94,7 +74,7 @@ static void printHelp()
                  " Tom -> Bob -> Alice -> Peter -> Tom" << std::endl << std::endl;
 }
 
-static Config parseCmdLine(int argc, char **argv)
+Config parseCmdLine(int argc, char **argv)
 {
     Config cfg;
 
@@ -121,7 +101,7 @@ static Config parseCmdLine(int argc, char **argv)
     return cfg;
 }
 
-static void printFoundList(const std::vector<Person> &giftList)
+void printFoundList(const std::vector<Person> &giftList)
 {
     for (const auto &pList : giftList)
     {
@@ -130,7 +110,7 @@ static void printFoundList(const std::vector<Person> &giftList)
     dbg << giftList.cbegin()->name << std::endl;
 }
 
-static void genFiles(std::vector<Person> &giftList, const std::string &inFilename)
+void genFiles(std::vector<Person> &giftList, const std::string &inFilename)
 {
     // now we'll have to produce envelopes and cards. We write two files
     // where we have a mapping number <-> person. Two people might read
@@ -148,7 +128,8 @@ static void genFiles(std::vector<Person> &giftList, const std::string &inFilenam
 }
 
 
-static std::pair<std::string, std::string> getOutFilenames(const std::string &inFilename)
+
+std::pair<std::string, std::string> getOutFilenames(const std::string &inFilename)
 {
     bool dotFound = false;
     auto itIn=inFilename.rbegin();
@@ -174,7 +155,7 @@ static std::pair<std::string, std::string> getOutFilenames(const std::string &in
     return make_pair(outFilenameBase+"_cards.txt", outFilenameBase+"_envelopes.txt");
 }
 
-static void writeCards(const std::map<unsigned int, std::string> &personIds, const std::string &filename)
+void writeCards(const std::map<unsigned int, std::string> &personIds, const std::string &filename)
 {
     std::ofstream outputFile(filename);
 
@@ -184,7 +165,7 @@ static void writeCards(const std::map<unsigned int, std::string> &personIds, con
     }
 }
 
-static void writeEnvelopes(const std::map<unsigned int, std::string> &personIds,
+void writeEnvelopes(const std::map<unsigned int, std::string> &personIds,
                            const std::vector<Person> &giftList, const std::string &filename)
 {
     std::ofstream outputFile(filename);
@@ -220,4 +201,29 @@ static void writeEnvelopes(const std::map<unsigned int, std::string> &personIds,
 
         ++itGiftee;
     }
+}
+} // namespace
+
+int main(int argc, char **argv)
+{
+    if (argc < 2)
+    {
+        printHelp();
+    }
+    else
+    {
+        auto const cfg = parseCmdLine(argc, argv);
+
+        auto p = parseFile(cfg.filename, cfg.sendEmails);
+
+        bool listConstructionSuccess = ( cfg.randomAlgo ? findValidListRand(p) : findValidListRecursive(p) );
+        if (listConstructionSuccess)
+        {
+            printFoundList(p);
+            genFiles(p, cfg.filename);
+            sendEmails(p);
+        }
+    }
+
+	return EXIT_SUCCESS;
 }
