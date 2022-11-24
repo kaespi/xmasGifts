@@ -18,8 +18,6 @@
 
 #include <iostream>
 
-using namespace std;
-
 unsigned int OutputCfg::verbosityLevel = 0;
 
 OutputData out;

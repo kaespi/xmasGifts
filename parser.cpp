@@ -23,30 +23,28 @@
 #include <sstream>
 #include <algorithm>
 
-using namespace std;
-
 // parse a list of (delimited) names
-static void parseBlockedGiftees(Person &p, istringstream &is);
+static void parseBlockedGiftees(Person &p, std::istringstream &is);
 
 // debug prints the parsed configuration
-static void debugPrintCfg(const vector<Person> &people);
+static void debugPrintCfg(const std::vector<Person> &people);
 
 bool operator==(const Person &x, const Person &y)
 {
     return x.name==y.name;
 }
 
-vector<Person> parseFile(const string &fIn, const bool sendEmails)
+std::vector<Person> parseFile(const std::string &fIn, const bool sendEmails)
 {
-    vector<Person> people;
+    std::vector<Person> people;
 
-    ifstream inputFile(fIn);
+    std::ifstream inputFile(fIn);
 
-    string line;
-    while (getline(inputFile, line))
+    std::string line;
+    while (std::getline(inputFile, line))
     {
-        istringstream entry(line);
-        string name;
+        std::istringstream entry(line);
+        std::string name;
 
         entry >> name;
         if (!name.empty())
@@ -54,7 +52,7 @@ vector<Person> parseFile(const string &fIn, const bool sendEmails)
             Person p{name, {}, {}};
 
             if (sendEmails) {
-                string email;
+                std::string email;
                 entry >> email;
                 p.email = email;
             }
@@ -67,24 +65,24 @@ vector<Person> parseFile(const string &fIn, const bool sendEmails)
             }
             else
             {
-                cerr << name << " appears multiple times (using just the first entry)" << endl;
+                std::cerr << name << " appears multiple times (using just the first entry)" << std::endl;
             }
         }
     }
 
-    dbg << people.size() << " people parsed" << endl;
+    dbg << people.size() << " people parsed" << std::endl;
 
     debugPrintCfg(people);
 
     return people;
 }
 
-static void parseBlockedGiftees(Person &p, istringstream &is)
+static void parseBlockedGiftees(Person &p, std::istringstream &is)
 {
-    string s;
+    std::string s;
     while (is >> s)
     {
-        string tmp;
+        std::string tmp;
         for (auto c = s.cbegin(); c!=s.cend(); c++)
         {
             if (*c==',' || *c==';')
@@ -108,7 +106,7 @@ static void parseBlockedGiftees(Person &p, istringstream &is)
     }
 }
 
-static void debugPrintCfg(const vector<Person> &people)
+static void debugPrintCfg(const std::vector<Person> &people)
 {
     for (const auto &p : people)
     {
@@ -119,8 +117,8 @@ static void debugPrintCfg(const vector<Person> &people)
             dbg << " " << b;
         }
 
-        dbg << endl;
+        dbg << std::endl;
     }
 
-    dbg << endl;
+    dbg << std::endl;
 }

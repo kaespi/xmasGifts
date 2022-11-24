@@ -24,10 +24,8 @@
 #include "shuffle.h"
 #include "output.h"
 
-using namespace std;
-
 struct Config {
-    string filename{};
+    std::string filename{};
     bool randomAlgo{false};
     bool sendEmails{false};
 };
@@ -39,20 +37,20 @@ static void printHelp();
 static Config parseCmdLine(int argc, char **argv);
 
 // prints the final resulting list of donors/giftees
-static void printFoundList(const vector<Person> &giftList);
+static void printFoundList(const std::vector<Person> &giftList);
 
 // writes the found gift list into the two output files
-static void genFiles(vector<Person> &giftList, const string &inFilename);
+static void genFiles(std::vector<Person> &giftList, const std::string &inFilename);
 
 // generates the output filenames for the envelopes and cards
-static pair<string, string> getOutFilenames(const string &inFilename);
+static std::pair<std::string, std::string> getOutFilenames(const std::string &inFilename);
 
 // writes the file with the cards
-static void writeCards(const map<unsigned int, string> &personIds, const string &filename);
+static void writeCards(const std::map<unsigned int, std::string> &personIds, const std::string &filename);
 
 // writes the file with the cards
-static void writeEnvelopes(const map<unsigned int, string> &personIds,
-                           const vector<Person> &giftList, const string &filename);
+static void writeEnvelopes(const std::map<unsigned int, std::string> &personIds,
+                           const std::vector<Person> &giftList, const std::string &filename);
 
 int main(int argc, char **argv)
 {
@@ -79,21 +77,21 @@ int main(int argc, char **argv)
 
 static void printHelp()
 {
-    cout << "Usage: xmasGifts [-v] [-r] [-e] [<configuration file>]" << endl << endl <<
-            "    -v increases verbosity level" << endl <<
-            "    -r use purely random search for gift list (by default: systematic, recursive search)" << endl <<
-            "    -e parse email addresses (2nd column in the input file)" << endl <<
-            "    <configuration file>: file containing the participants and their" << endl <<
-            "                          past giftees/blocked giftees" << endl << endl <<
-            "The configuration file should list on each line first the participant's name" << endl <<
-            "followed by a list of names which he shouldn't get assigned. E.g." << endl <<
-            " Alice Bob" << endl <<
-            " Bob   Peter,Tom" << endl <<
-            " Tom   Alice" << endl <<
-            " Peter Bob" << endl << endl <<
-            "The software then tries to find a circular list including all participants" << endl <<
-            "having assigned another participant as giftee, such as for the above e.g." << endl << endl <<
-            " Tom -> Bob -> Alice -> Peter -> Tom" << endl << endl;
+    std::cout << "Usage: xmasGifts [-v] [-r] [-e] [<configuration file>]" << std::endl << std::endl <<
+                 "    -v increases verbosity level" << std::endl <<
+                 "    -r use purely random search for gift list (by default: systematic, recursive search)" << std::endl <<
+                 "    -e parse email addresses (2nd column in the input file)" << std::endl <<
+                 "    <configuration file>: file containing the participants and their" << std::endl <<
+                 "                          past giftees/blocked giftees" << std::endl << std::endl <<
+                 "The configuration file should list on each line first the participant's name" << std::endl <<
+                 "followed by a list of names which he shouldn't get assigned. E.g." << std::endl <<
+                 " Alice Bob" << std::endl <<
+                 " Bob   Peter,Tom" << std::endl <<
+                 " Tom   Alice" << std::endl <<
+                 " Peter Bob" << std::endl << std::endl <<
+                 "The software then tries to find a circular list including all participants" << std::endl <<
+                 "having assigned another participant as giftee, such as for the above e.g." << std::endl << std::endl <<
+                 " Tom -> Bob -> Alice -> Peter -> Tom" << std::endl << std::endl;
 }
 
 static Config parseCmdLine(int argc, char **argv)
@@ -102,15 +100,15 @@ static Config parseCmdLine(int argc, char **argv)
 
     for (int n=1; n<argc; ++n)
     {
-        if (string("-v")==argv[n])
+        if (std::string("-v")==argv[n])
         {
             OutputCfg::increaseVerbosity();
         }
-        else if (string("-r")==argv[n])
+        else if (std::string("-r")==argv[n])
         {
             cfg.randomAlgo = true;
         }
-        else if (string("-e")==argv[n])
+        else if (std::string("-e")==argv[n])
         {
             cfg.sendEmails = true;
         }
@@ -123,16 +121,16 @@ static Config parseCmdLine(int argc, char **argv)
     return cfg;
 }
 
-static void printFoundList(const vector<Person> &giftList)
+static void printFoundList(const std::vector<Person> &giftList)
 {
     for (const auto &pList : giftList)
     {
         dbg << pList.name << " -> ";
     }
-    dbg << giftList.cbegin()->name << endl;
+    dbg << giftList.cbegin()->name << std::endl;
 }
 
-static void genFiles(vector<Person> &giftList, const string &inFilename)
+static void genFiles(std::vector<Person> &giftList, const std::string &inFilename)
 {
     // now we'll have to produce envelopes and cards. We write two files
     // where we have a mapping number <-> person. Two people might read
@@ -145,11 +143,12 @@ static void genFiles(vector<Person> &giftList, const string &inFilename)
     writeCards(nums, fn.first);
     writeEnvelopes(nums, giftList, fn.second);
 
-    cout << "Info for cards written into " << fn.first << endl;
-    cout << "Info for envelopes written into " << fn.second << endl;
+    std::cout << "Info for cards written into " << fn.first << std::endl;
+    std::cout << "Info for envelopes written into " << fn.second << std::endl;
 }
 
-static pair<string, string> getOutFilenames(const string &inFilename)
+
+static std::pair<std::string, std::string> getOutFilenames(const std::string &inFilename)
 {
     bool dotFound = false;
     auto itIn=inFilename.rbegin();
@@ -162,10 +161,10 @@ static pair<string, string> getOutFilenames(const string &inFilename)
         }
     }
 
-    string outFilenameBase;
+    std::string outFilenameBase;
     if (dotFound)
     {
-        outFilenameBase = string(inFilename, 0, inFilename.rend() - itIn - 1);
+        outFilenameBase = std::string(inFilename, 0, inFilename.rend() - itIn - 1);
     }
     else
     {
@@ -175,20 +174,20 @@ static pair<string, string> getOutFilenames(const string &inFilename)
     return make_pair(outFilenameBase+"_cards.txt", outFilenameBase+"_envelopes.txt");
 }
 
-static void writeCards(const map<unsigned int, string> &personIds, const string &filename)
+static void writeCards(const std::map<unsigned int, std::string> &personIds, const std::string &filename)
 {
-    ofstream outputFile(filename);
+    std::ofstream outputFile(filename);
 
     for (auto &pn : personIds)
     {
-        outputFile << pn.first << " - " << pn.second << endl;
+        outputFile << pn.first << " - " << pn.second << std::endl;
     }
 }
 
-static void writeEnvelopes(const map<unsigned int, string> &personIds,
-                           const vector<Person> &giftList, const string &filename)
+static void writeEnvelopes(const std::map<unsigned int, std::string> &personIds,
+                           const std::vector<Person> &giftList, const std::string &filename)
 {
-    ofstream outputFile(filename);
+    std::ofstream outputFile(filename);
 
     // giftee iterator points one ahead
     auto itGiftee = ++(giftList.begin());
@@ -201,22 +200,22 @@ static void writeEnvelopes(const map<unsigned int, string> &personIds,
             itGiftee = giftList.begin();
         }
 
-        const string &donor = itDonor->name;
-        const string &giftee = itGiftee->name;
+        const std::string &donor = itDonor->name;
+        const std::string &giftee = itGiftee->name;
 
         // extract the ID's for the two people (donor and giftee)
         auto donorId = find_if(personIds.begin(), personIds.end(),
-                [&donor](pair<unsigned int, string> const &v) { return v.second==donor; });
+                [&donor](std::pair<unsigned int, std::string> const &v) { return v.second==donor; });
         auto gifteeId = find_if(personIds.begin(), personIds.end(),
-                [&giftee](pair<unsigned int, string> const &v) { return v.second==giftee; });
+                [&giftee](std::pair<unsigned int, std::string> const &v) { return v.second==giftee; });
 
         if (donorId==personIds.end() || gifteeId==personIds.end())
         {
-            cerr << "Could not find numbers for " << donor << " and " << giftee << endl;
+            std::cerr << "Could not find numbers for " << donor << " and " << giftee << std::endl;
         }
         else
         {
-            outputFile << "Card " << gifteeId->first << " into envelope " << donorId->first << endl;
+            outputFile << "Card " << gifteeId->first << " into envelope " << donorId->first << std::endl;
         }
 
         ++itGiftee;

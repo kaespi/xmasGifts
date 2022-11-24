@@ -21,27 +21,25 @@
 #include <random>
 #include <algorithm>
 
-using namespace std;
-
 // randomizes the entries in the giftList
-void shuffleList(std::vector<Person> &giftList, mt19937 &randGen);
+void shuffleList(std::vector<Person> &giftList, std::mt19937 &randGen);
 
 // checks if the list is ok, i.e. all donors have a valid giftee
-static bool checkList(const vector<Person> &giftList);
+static bool checkList(const std::vector<Person> &giftList);
 
 // debug prints the list
-static void debugList(const vector<Person> &list);
+static void debugList(const std::vector<Person> &list);
 
 // recursivley tries to swap elements in the people list to find a valid sequence
-static bool addGiftees(vector<Person> &giftList, std::vector<Person>::iterator itDonor);
+static bool addGiftees(std::vector<Person> &giftList, std::vector<Person>::iterator itDonor);
 
-void shuffleList(std::vector<Person> &giftList, mt19937 &randGen)
+void shuffleList(std::vector<Person> &giftList, std::mt19937 &randGen)
 {
     // swap two random elements in the list
-    uniform_int_distribution<unsigned int> idist(0, giftList.size()-1);
+    std::uniform_int_distribution<unsigned int> idist(0, giftList.size()-1);
     unsigned int ix1 = idist(randGen);
     unsigned int ix2 = idist(randGen);
-    swap(giftList[ix1], giftList[ix2]);
+    std::swap(giftList[ix1], giftList[ix2]);
 }
 
 bool findValidListRand(std::vector<Person> &giftList)
@@ -55,8 +53,8 @@ bool findValidListRand(std::vector<Person> &giftList)
     // implementation.
 
     // code below copied from https://en.cppreference.com/w/cpp/numeric/random/uniform_int_distribution
-    random_device rd;  // Will be used to obtain a seed for the random number engine
-    mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
+    std::random_device rd;  // Will be used to obtain a seed for the random number engine
+    std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
 
     debugList(giftList);
 
@@ -66,7 +64,7 @@ bool findValidListRand(std::vector<Person> &giftList)
         debugList(giftList);
     }
 
-    dbg << endl;
+    dbg << std::endl;
 
     // we're not reaching this point if the list is not valid
     return true;
@@ -83,8 +81,8 @@ bool findValidListRecursive(std::vector<Person> &giftList)
 
     // randomize the entries in the list first, to allow some randomization...
     // code below copied from https://en.cppreference.com/w/cpp/numeric/random/uniform_int_distribution
-    random_device rd;  // Will be used to obtain a seed for the random number engine
-    mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
+    std::random_device rd;  // Will be used to obtain a seed for the random number engine
+    std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
     for (decltype(giftList.size()) i=0; i<giftList.size(); ++i)
     {
         shuffleList(giftList, gen);
@@ -94,17 +92,17 @@ bool findValidListRecursive(std::vector<Person> &giftList)
     {
         success = true;
         debugList(giftList);
-        dbg << endl;
+        dbg << std::endl;
     }
     else
     {
-        cout << "No circular donor/giftee assignment possible" << endl;
+        std::cout << "No circular donor/giftee assignment possible" << std::endl;
     }
 
     return success;
 }
 
-static bool checkList(const vector<Person> &giftList)
+static bool checkList(const std::vector<Person> &giftList)
 {
     bool listOk = true;
 
@@ -130,7 +128,7 @@ static bool checkList(const vector<Person> &giftList)
     return listOk;
 }
 
-static bool addGiftees(vector<Person> &giftList, std::vector<Person>::iterator itDonor)
+static bool addGiftees(std::vector<Person> &giftList, std::vector<Person>::iterator itDonor)
 {
     bool success = false;
 
@@ -161,7 +159,7 @@ static bool addGiftees(vector<Person> &giftList, std::vector<Person>::iterator i
                 // itGiftee might point to the same element as itNewGiftee does.
                 // We don't need to worry about that, the library swap()-function
                 // takes care of it
-                swap(*itGiftee, *itNewGiftee);
+                std::swap(*itGiftee, *itNewGiftee);
 
                 if (addGiftees(giftList, itGiftee))
                 {
@@ -172,7 +170,7 @@ static bool addGiftees(vector<Person> &giftList, std::vector<Person>::iterator i
                 {
                     // undo the swapping (recover the original state of
                     // the list)
-                    swap(*itGiftee, *itNewGiftee);
+                    std::swap(*itGiftee, *itNewGiftee);
                 }
             }
         }
@@ -181,25 +179,25 @@ static bool addGiftees(vector<Person> &giftList, std::vector<Person>::iterator i
     return success;
 }
 
-static void debugList(const vector<Person> &list)
+static void debugList(const std::vector<Person> &list)
 {
     for (const auto &p : list)
     {
         dbg << p.name << " -> ";
     }
-    dbg << list.cbegin()->name << endl;
+    dbg << list.cbegin()->name << std::endl;
 }
 
-map<unsigned int, string> randomizePersonNumbers(vector<Person> &people)
+std::map<unsigned int, std::string> randomizePersonNumbers(std::vector<Person> &people)
 {
-    map<unsigned int, string> persNum;
+    std::map<unsigned int, std::string> persNum;
 
     // code below copied from https://en.cppreference.com/w/cpp/numeric/random/uniform_int_distribution
-    random_device rd;  // Will be used to obtain a seed for the random number engine
-    mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
-    uniform_int_distribution<unsigned int> idist(0, people.size()-1);
+    std::random_device rd;  // Will be used to obtain a seed for the random number engine
+    std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
+    std::uniform_int_distribution<unsigned int> idist(0, people.size()-1);
 
-    vector<bool> ids(people.size(), false);
+    std::vector<bool> ids(people.size(), false);
 
     for (const auto &p : people)
     {
