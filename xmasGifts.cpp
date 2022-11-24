@@ -26,11 +26,17 @@
 
 using namespace std;
 
+struct Config {
+    string filename{};
+    bool randomAlgo{false};
+    bool sendEmails{false};
+};
+
 // prints a little help text to the command line
 static void printHelp();
 
 // parse the command line and return the file to be parsed
-static std::tuple<string, bool> parseCmdLine(int argc, char **argv);
+static Config parseCmdLine(int argc, char **argv);
 
 // prints the final resulting list of donors/giftees
 static void printFoundList(const vector<Person> &giftList);
@@ -56,15 +62,15 @@ int main(int argc, char **argv)
     }
     else
     {
-        const std::tuple<string, bool> cfg = parseCmdLine(argc, argv);
+        auto const cfg = parseCmdLine(argc, argv);
 
-        auto p = parseFile(get<0>(cfg));
+        auto p = parseFile(cfg.filename, cfg.sendEmails);
 
-        bool listConstructionSuccess = ( get<1>(cfg) ? findValidListRand(p) : findValidListRecursive(p) );
+        bool listConstructionSuccess = ( cfg.randomAlgo ? findValidListRand(p) : findValidListRecursive(p) );
         if (listConstructionSuccess)
         {
             printFoundList(p);
-            genFiles(p, get<0>(cfg));
+            genFiles(p, cfg.filename);
         }
     }
 
@@ -73,9 +79,10 @@ int main(int argc, char **argv)
 
 static void printHelp()
 {
-    cout << "Usage: xmasGifts [-v] [-r] [<configuration file>]" << endl << endl <<
+    cout << "Usage: xmasGifts [-v] [-r] [-e] [<configuration file>]" << endl << endl <<
             "    -v increases verbosity level" << endl <<
             "    -r use purely random search for gift list (by default: systematic, recursive search)" << endl <<
+            "    -e parse email addresses (2nd column in the input file)" << endl <<
             "    <configuration file>: file containing the participants and their" << endl <<
             "                          past giftees/blocked giftees" << endl << endl <<
             "The configuration file should list on each line first the participant's name" << endl <<
@@ -89,10 +96,9 @@ static void printHelp()
             " Tom -> Bob -> Alice -> Peter -> Tom" << endl << endl;
 }
 
-static std::tuple<string, bool> parseCmdLine(int argc, char **argv)
+static Config parseCmdLine(int argc, char **argv)
 {
-    string filename;
-    bool randomAlgo = false;
+    Config cfg;
 
     for (int n=1; n<argc; ++n)
     {
@@ -102,15 +108,19 @@ static std::tuple<string, bool> parseCmdLine(int argc, char **argv)
         }
         else if (string("-r")==argv[n])
         {
-            randomAlgo = true;
+            cfg.randomAlgo = true;
+        }
+        else if (string("-e")==argv[n])
+        {
+            cfg.sendEmails = true;
         }
         else
         {
-            filename = argv[n];
+            cfg.filename = argv[n];
         }
     }
 
-    return make_tuple(filename, randomAlgo);
+    return cfg;
 }
 
 static void printFoundList(const vector<Person> &giftList)

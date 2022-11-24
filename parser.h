@@ -20,4 +20,4 @@
 
 #include <vector>
 
-std::vector<Person> parseFile(const std::string &fIn);
+std::vector<Person> parseFile(const std::string &fIn, const bool sendEmails);

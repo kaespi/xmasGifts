@@ -18,7 +18,7 @@ Compile the software with `make all`.
 Run the tool in the command line with
 
 ```
-xmasGifts [-v] [-r] <config file>
+xmasGifts [-v] [-r] [-e] <config file>
 ```
 
 with `<config file>` being a configuration. Additionally a `-v` increases verbosity level. The format of the configuration file is explained in more details in the next section.
@@ -29,7 +29,9 @@ The tool has two ways implemented to construct the "gift list":
 
 The second approach, i.e. using `-r` is a reasonable choice if there exist not too many constraints, i.e. when it's likely to find a valid list with just a few random guesses. In all other cases the default option is preferable.
 
-### Configuration File
+The option `-e` enables the parsing of email addresses as the 2nd column in the input file (see also "Configuration File with Email Addresses").
+
+### Basic Configuration File
 
 The configuration file contains one line per participant. The first entry on the line is the name of the participant. Note that no whitespace (e.g. tab, space) is allowed in names. The tool will behave incorrect in this case. After the participant's name ("donor") follows a list (comma, semicolon, or whitespace separated) of other particpants which have to be excluded as the giftees. Consider the exemplary configuration file:
 
@@ -41,6 +43,19 @@ The configuration file contains one line per participant. The first entry on the
 ```
 
 This file means that Bob is excluded as giftee for Alice. Bob cannot be donor for Peter and Tom, etc. A valid solution in this configuration would be e.g. Alice -> Peter -> Tom -> Bob -> Alice, i.e. Alice has Peter assigned as her giftee, Peter is donor for Tom, Tom is donor for Bob, etc.
+
+### Configuration File with Email Adresses
+
+When using the email command line option `-e` the program expects people's email address in the 2nd column of the input file:
+
+```
+ Alice  alice@aol.com      Bob
+ Bob    bob@gmail.com      Peter,Tom
+ Tom    tom@gmx.net        Alice
+ Peter  peter@hotmail.com  Bob
+```
+
+The meaning of the other parts of the file don't change.
 
 ### Output File
 

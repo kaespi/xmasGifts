@@ -36,7 +36,7 @@ bool operator==(const Person &x, const Person &y)
     return x.name==y.name;
 }
 
-vector<Person> parseFile(const string &fIn)
+vector<Person> parseFile(const string &fIn, const bool sendEmails)
 {
     vector<Person> people;
 
@@ -51,7 +51,14 @@ vector<Person> parseFile(const string &fIn)
         entry >> name;
         if (!name.empty())
         {
-            Person p{name, {}};
+            Person p{name, {}, {}};
+
+            if (sendEmails) {
+                string email;
+                entry >> email;
+                p.email = email;
+            }
+
             // check if this person doesn't exist yet in the list
             if (find(people.cbegin(), people.cend(), p)==people.cend())
             {
