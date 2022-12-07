@@ -19,6 +19,8 @@
 #include <fstream>
 #include <algorithm>
 
+#include "config.h"
+#include "email.h"
 #include "parser.h"
 #include "person.h"
 #include "shuffle.h"
@@ -36,7 +38,7 @@ struct Config {
 void printHelp();
 
 // parse the command line and return the file to be parsed
-Config parseCmdLine(int argc, char **argv);
+void parseCmdLine(int argc, char **argv, config::Config& cfg);
 
 // prints the final resulting list of donors/giftees
 void printFoundList(const std::vector<Person> &giftList);
@@ -57,10 +59,15 @@ void writeEnvelopes(const std::map<unsigned int, std::string> &personIds,
 
 void printHelp()
 {
-    std::cout << "Usage: xmasGifts [-v] [-r] [-e] [<configuration file>]" << std::endl << std::endl <<
+    std::cout << "Usage: xmasGifts [-v] [-r] [-e] [-u <username>] [-p <pwd>] [-f <sender>]" << std::endl <<
+                 "                 [-s <smtpserver>] <configuration file>" << std::endl << std::endl <<
                  "    -v increases verbosity level" << std::endl <<
                  "    -r use purely random search for gift list (by default: systematic, recursive search)" << std::endl <<
                  "    -e parse email addresses (2nd column in the input file)" << std::endl <<
+                 "    -u <username> the username for the STMP server" << std::endl <<
+                 "    -p <pwd> the password for the STMP server" << std::endl <<
+                 "    -s <smtpserver> the STMP server address" << std::endl <<
+                 "    -f <sender> the sender email address" << std::endl <<
                  "    <configuration file>: file containing the participants and their" << std::endl <<
                  "                          past giftees/blocked giftees" << std::endl << std::endl <<
                  "The configuration file should list on each line first the participant's name" << std::endl <<
@@ -71,13 +78,23 @@ void printHelp()
                  " Peter Bob" << std::endl << std::endl <<
                  "The software then tries to find a circular list including all participants" << std::endl <<
                  "having assigned another participant as giftee, such as for the above e.g." << std::endl << std::endl <<
-                 " Tom -> Bob -> Alice -> Peter -> Tom" << std::endl << std::endl;
+                 " Tom -> Bob -> Alice -> Peter -> Tom" << std::endl << std::endl <<
+                 "With the email option set (-e) the second column in the input file is" << std::endl <<
+                 "the person in the first column's email address, e.g." << std::endl << std::endl <<
+                 " Alice alice@aol.com  Bob" << std::endl <<
+                 " Bob   bob@bell.com   Peter,Tom" << std::endl <<
+                 " Tom   tom@ti.com     Alice" << std::endl <<
+                 " Peter peter@pepsi.co Bob" << std::endl << std::endl <<
+                 "In addition to the cards and assignments in the output files, each participant" << std::endl <<
+                 "receives an email disclosing who is is giftee. I.e. in case the circular list" << std::endl <<
+                 " Tom -> Bob -> Alice -> Peter -> Tom" << std::endl <<
+                 "Then an email to tom@ti.com is sent stating that \"Hi Tom, ... your giftee is Bob\"," << std::endl <<
+                 "and so an email to bob@bell.com, etc.. Currently the text of the email is hardcoded" << std::endl <<
+                 "in the email.cpp file. So in case you need customization: just edit and recompile." << std::endl << std::endl;
 }
 
-Config parseCmdLine(int argc, char **argv)
+void parseCmdLine(int argc, char **argv, config::Config& cfg)
 {
-    Config cfg;
-
     for (int n=1; n<argc; ++n)
     {
         if (std::string("-v")==argv[n])
@@ -86,19 +103,37 @@ Config parseCmdLine(int argc, char **argv)
         }
         else if (std::string("-r")==argv[n])
         {
-            cfg.randomAlgo = true;
+            cfg.setConfigValue("useRandomAlgo", true);
         }
         else if (std::string("-e")==argv[n])
         {
-            cfg.sendEmails = true;
+            cfg.setConfigValue("useEmails", true);
+        }
+        else if (std::string("-u")==argv[n])
+        {
+            ++n;
+            cfg.setConfigValue("emailUsername", std::string{argv[n]});
+        }
+        else if (std::string("-s")==argv[n])
+        {
+            ++n;
+            cfg.setConfigValue("smtpServer", std::string{argv[n]});
+        }
+        else if (std::string("-f")==argv[n])
+        {
+            ++n;
+            cfg.setConfigValue("emailSender", std::string{argv[n]});
+        }
+        else if (std::string("-p")==argv[n])
+        {
+            ++n;
+            cfg.setConfigValue("emailPwd", std::string{argv[n]});
         }
         else
         {
-            cfg.filename = argv[n];
+            cfg.setConfigValue("inputFilename", std::string{argv[n]});
         }
     }
-
-    return cfg;
 }
 
 void printFoundList(const std::vector<Person> &giftList)
@@ -126,8 +161,6 @@ void genFiles(std::vector<Person> &giftList, const std::string &inFilename)
     std::cout << "Info for cards written into " << fn.first << std::endl;
     std::cout << "Info for envelopes written into " << fn.second << std::endl;
 }
-
-
 
 std::pair<std::string, std::string> getOutFilenames(const std::string &inFilename)
 {
@@ -212,16 +245,19 @@ int main(int argc, char **argv)
     }
     else
     {
-        auto const cfg = parseCmdLine(argc, argv);
+        config::Config cfg;
+        parseCmdLine(argc, argv, cfg);
 
-        auto p = parseFile(cfg.filename, cfg.sendEmails);
+        dbg << "parsed cmdline" << std::endl;
 
-        bool listConstructionSuccess = ( cfg.randomAlgo ? findValidListRand(p) : findValidListRecursive(p) );
+        auto p = parseFile(cfg.getInputFilename(), cfg.useEmails());
+
+        bool listConstructionSuccess = ( cfg.useRandomAlgo() ? findValidListRand(p) : findValidListRecursive(p) );
         if (listConstructionSuccess)
         {
             printFoundList(p);
-            genFiles(p, cfg.filename);
-            sendEmails(p);
+            genFiles(p, cfg.getInputFilename());
+            email::sendEmails(p, cfg);
         }
     }
 

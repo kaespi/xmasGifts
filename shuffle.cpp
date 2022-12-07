@@ -79,35 +79,6 @@ void debugList(const std::vector<Person> &list)
     dbg << list.cbegin()->name << std::endl;
 }
 
-std::map<unsigned int, std::string> randomizePersonNumbers(std::vector<Person> &people)
-{
-    std::map<unsigned int, std::string> persNum;
-
-    // code below copied from https://en.cppreference.com/w/cpp/numeric/random/uniform_int_distribution
-    std::random_device rd;  // Will be used to obtain a seed for the random number engine
-    std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
-    std::uniform_int_distribution<unsigned int> idist(0, people.size()-1);
-
-    std::vector<bool> ids(people.size(), false);
-
-    for (const auto &p : people)
-    {
-        // find a not yet used id for this person
-        unsigned int id = idist(gen);
-        while (ids[id])
-        {
-            if (++id == ids.size())
-            {
-                id = 0;
-            }
-        }
-        ids[id] = true;
-        persNum.emplace(make_pair(id, p.name));
-    }
-
-    return persNum;
-}
-
 bool addGiftees(std::vector<Person> &giftList, std::vector<Person>::iterator itDonor)
 {
     bool success = false;
@@ -218,4 +189,33 @@ bool findValidListRecursive(std::vector<Person> &giftList)
     }
 
     return success;
+}
+
+std::map<unsigned int, std::string> randomizePersonNumbers(std::vector<Person> &people)
+{
+    std::map<unsigned int, std::string> persNum;
+
+    // code below copied from https://en.cppreference.com/w/cpp/numeric/random/uniform_int_distribution
+    std::random_device rd;  // Will be used to obtain a seed for the random number engine
+    std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
+    std::uniform_int_distribution<unsigned int> idist(0, people.size()-1);
+
+    std::vector<bool> ids(people.size(), false);
+
+    for (const auto &p : people)
+    {
+        // find a not yet used id for this person
+        unsigned int id = idist(gen);
+        while (ids[id])
+        {
+            if (++id == ids.size())
+            {
+                id = 0;
+            }
+        }
+        ids[id] = true;
+        persNum.emplace(make_pair(id, p.name));
+    }
+
+    return persNum;
 }

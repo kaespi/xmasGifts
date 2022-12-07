@@ -15,11 +15,11 @@
 #
 
 CXXFLAGS = -O2 -Wall -std=c++17
-OBJS = xmasGifts.o parser.o shuffle.o output.o
+OBJS = xmasGifts.o parser.o shuffle.o output.o guid.o email.o config.o
 TARGET = xmasGifts
 
 $(TARGET): $(OBJS)
-	$(CXX) -o $(TARGET) $(OBJS)
+	$(CXX) -o $(TARGET) $(OBJS) -lquickmail -luuid
 
 all: $(TARGET)
 
