@@ -16,17 +16,18 @@
 
 #include "guid.h"
 
+#include <uuid/uuid.h>
+
 #include <iomanip>
 #include <sstream>
 #include <type_traits>
-#include <uuid/uuid.h>
 
 namespace guid
 {
 std::string getGuidStr8_4_4_4_12()
 {
     // formatting style of the GUID (default 8-4-4-4-12)
-    constexpr std::array guidNumdigitsGroups{ 8, 4, 4, 4, 12 };
+    constexpr std::array guidNumdigitsGroups{8, 4, 4, 4, 12};
 
     // generate the 32 random GUID bytes
     uuid_t guidCstyle;
@@ -42,7 +43,7 @@ std::string getGuidStr8_4_4_4_12()
     std::ostringstream ss;
     ss << std::hex << std::setfill('0');
     for (auto numdigits : guidNumdigitsGroups) {
-        for (auto n=0; n<numdigits; n+=2) {
+        for (auto n = 0; n < numdigits; n += 2) {
             ss << std::setw(2) << static_cast<unsigned>(*itGuid++);
         }
         if (itGuid != guid.cend()) {
@@ -52,4 +53,4 @@ std::string getGuidStr8_4_4_4_12()
 
     return ss.str();
 }
-} // namespace guid
+}  // namespace guid

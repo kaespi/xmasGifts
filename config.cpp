@@ -18,38 +18,17 @@
 
 namespace config
 {
-std::string const& Config::getInputFilename() const
-{
-    return m_inputFilename;
-}
+std::string const &Config::getInputFilename() const { return m_inputFilename; }
 
-std::string const& Config::getEmailSender() const
-{
-    return m_emailSender;
-}
+std::string const &Config::getEmailSender() const { return m_emailSender; }
 
-std::string const& Config::getSmtpServer() const
-{
-    return m_smtpServer;
-}
+std::string const &Config::getSmtpServer() const { return m_smtpServer; }
 
-std::string const& Config::getEmailUsername() const
-{
-    return m_emailUsername;
-}
+std::string const &Config::getEmailUsername() const { return m_emailUsername; }
 
-std::string const& Config::getEmailPwd() const
-{
-    return m_emailPwd;
-}
+std::string const &Config::getEmailPwd() const { return m_emailPwd; }
 
-bool Config::useEmails() const
-{
-    return m_useEmails;
-}
+bool Config::useEmails() const { return m_useEmails; }
 
-bool Config::useRandomAlgo() const
-{
-    return m_useRandomAlgo;
-}
-} // namespace config
+bool Config::useRandomAlgo() const { return m_useRandomAlgo; }
+}  // namespace config

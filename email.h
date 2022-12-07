@@ -16,12 +16,12 @@
 
 #pragma once
 
+#include <vector>
+
 #include "config.h"
 #include "person.h"
 
-#include <vector>
-
 namespace email
 {
-void sendEmails(std::vector<Person> &giftList, config::Config const& cfg);
+void sendEmails(std::vector<Person>& giftList, config::Config const& cfg);
 }

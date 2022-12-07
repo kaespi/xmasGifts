@@ -16,11 +16,10 @@
 
 #pragma once
 
-#include <unordered_set>
 #include <optional>
+#include <unordered_set>
 
-struct Person
-{
+struct Person {
     std::string name;
     std::optional<std::string> email;
     std::unordered_set<std::string> blockedNames;

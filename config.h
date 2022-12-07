@@ -16,9 +16,9 @@
 
 #pragma once
 
-#include "output.h"
-
 #include <string>
+
+#include "output.h"
 
 namespace config
 {
@@ -27,27 +27,27 @@ class Config
 public:
     Config() = default;
 
-    template<typename T>
+    template <typename T>
     void setConfigValue(std::string_view cfgOption, T&& cfgValue)
     {
-        if constexpr(std::is_same_v<bool, T>) {
-            if (cfgOption=="useEmails") {
+        if constexpr (std::is_same_v<bool, T>) {
+            if (cfgOption == "useEmails") {
                 m_useEmails = cfgValue;
-            } else if (cfgOption=="useRandomAlgo") {
+            } else if (cfgOption == "useRandomAlgo") {
                 m_useRandomAlgo = cfgValue;
             } else {
                 // unknown entry, just don't do anything
             }
-        } else if constexpr(std::is_same_v<std::string, T>) {
-            if (cfgOption=="inputFilename") {
+        } else if constexpr (std::is_same_v<std::string, T>) {
+            if (cfgOption == "inputFilename") {
                 m_inputFilename = cfgValue;
-            } else if (cfgOption=="emailSender") {
+            } else if (cfgOption == "emailSender") {
                 m_emailSender = cfgValue;
-            } else if (cfgOption=="smtpServer") {
+            } else if (cfgOption == "smtpServer") {
                 m_smtpServer = cfgValue;
-            } else if (cfgOption=="emailUsername") {
+            } else if (cfgOption == "emailUsername") {
                 m_emailUsername = cfgValue;
-            } else if (cfgOption=="emailPwd") {
+            } else if (cfgOption == "emailPwd") {
                 m_emailPwd = cfgValue;
             } else {
                 // unknown entry, just don't do anything
@@ -70,8 +70,8 @@ private:
     std::string m_emailSender{};
     std::string m_smtpServer{};
     std::string m_emailUsername{};
-    std::string m_emailPwd{};;
+    std::string m_emailPwd{};
     bool m_useEmails{false};
     bool m_useRandomAlgo{false};
 };
-} // namespace config
+}  // namespace config

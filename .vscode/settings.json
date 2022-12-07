@@ -3,5 +3,12 @@
     "files.exclude": {
         "**/.git": true,
         "*.o": true
+    },
+    "editor.formatOnSave": true,
+    "clang-format.style": "{BasedOnStyle: Google, IndentWidth: 4, BreakBeforeBraces: Linux, AccessModifierOffset: -4}",
+    "clang-format.language.cpp.enable": true,
+    "[cpp]": {
+        "editor.defaultFormatter": "xaver.clang-format",
+        "editor.tabSize": 4
     }
 }

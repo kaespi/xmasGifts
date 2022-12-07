@@ -27,7 +27,12 @@ class OutputCfg
 
 public:
     static void increaseVerbosity() { ++verbosityLevel; }
-    static void decreaseVerbosity() { if (verbosityLevel > 0) { --verbosityLevel; } }
+    static void decreaseVerbosity()
+    {
+        if (verbosityLevel > 0) {
+            --verbosityLevel;
+        }
+    }
 
 private:
     static unsigned int verbosityLevel;
@@ -38,7 +43,7 @@ class OutputData
 {
 public:
     template <typename T>
-    OutputData& operator<<(const T &x)
+    OutputData& operator<<(const T& x)
     {
         std::cout << x;
         return *this;
@@ -58,10 +63,9 @@ class OutputDbg
 {
 public:
     template <typename T>
-    OutputDbg& operator<<(const T &x)
+    OutputDbg& operator<<(const T& x)
     {
-        if (OutputCfg::verbosityLevel >= 1)
-        {
+        if (OutputCfg::verbosityLevel >= 1) {
             std::cerr << x;
         }
 
@@ -70,8 +74,7 @@ public:
 
     OutputDbg& operator<<(std::ostream& (*os)(std::ostream&))
     {
-        if (OutputCfg::verbosityLevel >= 1)
-        {
+        if (OutputCfg::verbosityLevel >= 1) {
             std::cerr << os;
         }
         return *this;

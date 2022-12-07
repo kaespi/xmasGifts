@@ -15,13 +15,14 @@
 //
 
 #include "parser.h"
-#include "output.h"
 
-#include <string>
-#include <iostream>
-#include <fstream>
-#include <sstream>
 #include <algorithm>
+#include <fstream>
+#include <iostream>
+#include <sstream>
+#include <string>
+
+#include "output.h"
 
 namespace
 {
@@ -34,27 +35,20 @@ void debugPrintCfg(const std::vector<Person> &people);
 void parseBlockedGiftees(Person &p, std::istringstream &is)
 {
     std::string s;
-    while (is >> s)
-    {
+    while (is >> s) {
         std::string tmp;
-        for (auto c = s.cbegin(); c!=s.cend(); c++)
-        {
-            if (*c==',' || *c==';')
-            {
-                if (tmp.size() > 0)
-                {
+        for (auto c = s.cbegin(); c != s.cend(); c++) {
+            if (*c == ',' || *c == ';') {
+                if (tmp.size() > 0) {
                     p.blockedNames.insert(tmp);
                     tmp = "";
                 }
-            }
-            else
-            {
+            } else {
                 tmp += *c;
             }
         }
 
-        if (tmp.size() > 0)
-        {
+        if (tmp.size() > 0) {
             p.blockedNames.insert(tmp);
         }
     }
@@ -62,12 +56,10 @@ void parseBlockedGiftees(Person &p, std::istringstream &is)
 
 void debugPrintCfg(const std::vector<Person> &people)
 {
-    for (const auto &p : people)
-    {
+    for (const auto &p : people) {
         dbg << p.name << ":";
 
-        for (const auto &b : p.blockedNames)
-        {
+        for (const auto &b : p.blockedNames) {
             dbg << " " << b;
         }
 
@@ -76,12 +68,9 @@ void debugPrintCfg(const std::vector<Person> &people)
 
     dbg << std::endl;
 }
-} // namespace
+}  // namespace
 
-bool operator==(const Person &x, const Person &y)
-{
-    return x.name==y.name;
-}
+bool operator==(const Person &x, const Person &y) { return x.name == y.name; }
 
 std::vector<Person> parseFile(const std::string &fIn, const bool sendEmails)
 {
@@ -90,14 +79,12 @@ std::vector<Person> parseFile(const std::string &fIn, const bool sendEmails)
     std::ifstream inputFile(fIn);
 
     std::string line;
-    while (std::getline(inputFile, line))
-    {
+    while (std::getline(inputFile, line)) {
         std::istringstream entry(line);
         std::string name;
 
         entry >> name;
-        if (!name.empty())
-        {
+        if (!name.empty()) {
             Person p{name, {}, {}};
 
             if (sendEmails) {
@@ -107,14 +94,14 @@ std::vector<Person> parseFile(const std::string &fIn, const bool sendEmails)
             }
 
             // check if this person doesn't exist yet in the list
-            if (find(people.cbegin(), people.cend(), p)==people.cend())
-            {
+            if (find(people.cbegin(), people.cend(), p) == people.cend()) {
                 parseBlockedGiftees(p, entry);
                 people.emplace_back(p);
-            }
-            else
-            {
-                std::cerr << name << " appears multiple times (using just the first entry)" << std::endl;
+            } else {
+                std::cerr
+                    << name
+                    << " appears multiple times (using just the first entry)"
+                    << std::endl;
             }
         }
     }

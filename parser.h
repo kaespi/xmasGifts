@@ -16,8 +16,8 @@
 
 #pragma once
 
-#include "person.h"
-
 #include <vector>
 
-std::vector<Person> parseFile(const std::string &fIn, const bool sendEmails);
+#include "person.h"
+
+std::vector<Person> parseFile(const std::string& fIn, const bool sendEmails);
