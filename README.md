@@ -103,6 +103,6 @@ So e.g. like
 xmasGifts -e -s smtp.abc.com -u fred@abc.com -p fredpassword123 -f fred@abc.com cfg.txt
 ```
 
-The subject and body of the emails are hardcoded in the program, in the [`email.cpp`](email.cpp) file. So in case you don't want our German text in there, just edit the file and recompile.
+The subject and body of the emails are hardcoded in the program, in the [`email.cpp`](src/email.cpp) file. So in case you don't want our German text in there, just edit the file and recompile.
 
 There's no big magic in the email sending library. Therefore, some email providers might detect the emails as junk. So, probably you should warn the participants about an incoming email. At least some adaptations were made to let the message pass the Googlemail filter.
