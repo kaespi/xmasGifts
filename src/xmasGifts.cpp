@@ -61,77 +61,65 @@ void writeEnvelopes(const std::map<unsigned int, std::string> &personIds,
 
 void printHelp()
 {
-    std::cout
-        << "Usage: xmasGifts [-v] [-r] [-e] [-u <username>] [-p <pwd>] [-f "
-           "<sender>]"
-        << std::endl
-        << "                 [-s <smtpserver>] <configuration file>"
-        << std::endl
-        << std::endl
-        << "    -v increases verbosity level" << std::endl
-        << "    -r use purely random search for gift list (by default: "
-           "systematic, recursive search)"
-        << std::endl
-        << "    -e parse email addresses (2nd column in the input file)"
-        << std::endl
-        << "    -u <username> the username for the STMP server" << std::endl
-        << "    -p <pwd> the password for the STMP server" << std::endl
-        << "    -s <smtpserver> the STMP server address" << std::endl
-        << "    -f <sender> the sender email address" << std::endl
-        << "    <configuration file>: file containing the participants and "
-           "their"
-        << std::endl
-        << "                          past giftees/blocked giftees" << std::endl
-        << std::endl
-        << "The configuration file should list on each line first the "
-           "participant's name"
-        << std::endl
-        << "followed by a list of names which he shouldn't get assigned. E.g."
-        << std::endl
-        << " Alice Bob" << std::endl
-        << " Bob   Peter,Tom" << std::endl
-        << " Tom   Alice" << std::endl
-        << " Peter Bob" << std::endl
-        << std::endl
-        << "The software then tries to find a circular list including all "
-           "participants"
-        << std::endl
-        << "having assigned another participant as giftee, such as for the "
-           "above "
-           "e.g."
-        << std::endl
-        << std::endl
-        << " Tom -> Bob -> Alice -> Peter -> Tom" << std::endl
-        << std::endl
-        << "With the email option set (-e) the second column in the input file "
-           "is"
-        << std::endl
-        << "the person in the first column's email address, e.g." << std::endl
-        << std::endl
-        << " Alice alice@aol.com  Bob" << std::endl
-        << " Bob   bob@bell.com   Peter,Tom" << std::endl
-        << " Tom   tom@ti.com     Alice" << std::endl
-        << " Peter peter@pepsi.co Bob" << std::endl
-        << std::endl
-        << "In addition to the cards and assignments in the output files, each "
-           "participant"
-        << std::endl
-        << "receives an email disclosing who is is giftee. I.e. in case the "
-           "circular list"
-        << std::endl
-        << " Tom -> Bob -> Alice -> Peter -> Tom" << std::endl
-        << "Then an email to tom@ti.com is sent stating that \"Hi Tom, ... "
-           "your "
-           "giftee is Bob\","
-        << std::endl
-        << "and so an email to bob@bell.com, etc.. Currently the text of the "
-           "email is hardcoded"
-        << std::endl
-        << "in the email.cpp file. So in case you need customization: just "
-           "edit "
-           "and recompile."
-        << std::endl
-        << std::endl;
+#ifdef WITH_EMAIL
+    std::cout << R"(
+Usage: xmasGifts [-v] [-r] [-e] [-u <username>] [-p <pwd>] [-f <sender>]
+                 [-s <smtpserver>] <configuration file>)";
+#else   // WITH_EMAIL
+    std::cout << R"(
+Usage: xmasGifts [-v] [-r] [-e] <configuration file>)";
+#endif  // WITH_EMAIL
+    std::cout << R"(
+
+    -v increases verbosity level
+    -r use purely random search for gift list (by default: systematic, recursive search))";
+#ifdef WITH_EMAIL
+    std::cout << R"(
+    -e parse and send email addresses (2nd column in the input file)
+    -u <username> the username for the STMP server
+    -p <pwd> the password for the STMP server
+    -s <smtpserver> the STMP server address
+    -f <sender> the sender email address)";
+#else   // WITH_EMAIL
+    std::cout << R"(
+    -e parse email addresses (2nd column in the input file))";
+#endif  // WITH_EMAIL
+    std::cout << R"(
+    <configuration file>: file containing the participants and their
+                          past giftees/blocked giftees
+
+The configuration file should list on each line first the participant's name
+followed by a list of names which he shouldn't get assigned. E.g.
+ Alice Bob
+ Bob   Peter,Tom
+ Tom   Alice
+ Peter Bob
+
+The software then tries to find a circular list including all participants
+having assigned another participant as giftee, such as for the above e.g.
+
+ Tom -> Bob -> Alice -> Peter -> Tom
+
+With the email option set (-e) the second column in the input file is
+the person in the first column's email address, e.g.
+
+ Alice alice@aol.com  Bob
+ Bob   bob@bell.com   Peter,Tom
+ Tom   tom@ti.com     Alice
+ Peter peter@pepsi.co Bob
+)";
+
+#ifdef WITH_EMAIL
+    std::cout << R"(
+In addition to the cards and assignments in the output files, each participant
+receives an email disclosing who is is giftee. I.e. in case the circular list
+ Tom -> Bob -> Alice -> Peter -> Tom
+Then an email to tom@ti.com is sent stating that "Hi Tom, ... your giftee is Bob",
+and so an email to bob@bell.com, etc.. Currently the text of the email is hardcoded
+in the email.cpp file. So in case you need customization: just edit and recompile.
+
+")";
+#endif  // WITH_EMAIL
 }
 
 void parseCmdLine(int argc, char **argv, config::Config &cfg)
