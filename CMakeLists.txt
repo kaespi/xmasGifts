@@ -20,13 +20,13 @@ set(OPT_WARNINGS_AS_ERRORS_DEVELOPER_DEFAULT TRUE)
 add_executable(${APP_NAME})
 target_sources(${APP_NAME}
     PRIVATE
-        email.cpp
-        config.cpp
-        guid.cpp
-        output.cpp
-        parser.cpp
-        shuffle.cpp
-        xmasGifts.cpp
+        src/email.cpp
+        src/config.cpp
+        src/guid.cpp
+        src/output.cpp
+        src/parser.cpp
+        src/shuffle.cpp
+        src/xmasGifts.cpp
 )
 
 # check if the quickmail and uuid libraries are installed
