@@ -18,29 +18,35 @@ set(ENABLE_DEVELOPER_MODE
 set(OPT_WARNINGS_AS_ERRORS_DEVELOPER_DEFAULT TRUE)
 
 add_executable(${APP_NAME})
+
+# check if the quickmail and uuid libraries are installed
+find_library(QUICKMAIL_LIBRARY NAMES quickmail)
+find_library(UUID_LIBRARY NAMES uuid)
+if(QUICKMAIL_LIBRARY AND UUID_LIBRARY)
+    set(EMAIL_SRC src/email.cpp src/guid.cpp)
+    set(EMAIL_LIBS ${QUICKMAIL_LIBRARY} ${UUID_LIBRARY})
+    target_compile_definitions(${APP_NAME} PRIVATE WITH_EMAIL)
+else()
+    set(EMAIL_LIBS)
+    set(EMAIL_SRC)
+    if(NOT QUICKMAIL_LIBRARY)
+        message("quickmail library not found, email feature not compiled in.")
+    endif()
+    if(NOT UUID_LIBRARY)
+        message("uuid library not found, email feature not compiled in.")
+    endif()
+endif()
+
 target_sources(${APP_NAME}
     PRIVATE
-        src/email.cpp
         src/config.cpp
-        src/guid.cpp
         src/output.cpp
         src/parser.cpp
         src/shuffle.cpp
         src/xmasGifts.cpp
+        ${EMAIL_SRC}
 )
 
-# check if the quickmail and uuid libraries are installed
-find_library(QUICKMAIL_LIBRARY NAMES quickmail)
-if(NOT QUICKMAIL_LIBRARY)
-    message(FATAL_ERROR "quickmail library not found.")
-endif()
-
-find_library(UUID_LIBRARY NAMES uuid)
-if(NOT UUID_LIBRARY)
-message(FATAL_ERROR "uuid library not found.")
-endif()
-
 target_link_libraries(${APP_NAME}
-    quickmail
-    uuid
+    ${EMAIL_LIBS}
 )

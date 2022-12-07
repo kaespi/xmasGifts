@@ -282,7 +282,9 @@ int main(int argc, char **argv)
         if (listConstructionSuccess) {
             printFoundList(p);
             genFiles(p, cfg.getInputFilename());
+#ifdef WITH_EMAIL
             email::sendEmails(p, cfg);
+#endif
         }
     }
 
